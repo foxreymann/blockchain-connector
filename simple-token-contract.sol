@@ -6,6 +6,12 @@ contract SimpleToken{
     string symbol;
     mapping (address => uint) accounts;
     address[] public accountsAddresses;
+    
+    modifier onlyOwner(){
+        if(msg.sender==owner) {
+            _; // invoke the function
+        }
+    }
  
     constructor (uint256 _noOfTokens, string _symbol) public {
         owner = msg.sender;
@@ -18,16 +24,13 @@ contract SimpleToken{
     }
     
     function balanceOf(address _owner) public view returns (uint256 ) {
-        // check accountsAddresses for address
-        
-        // return 0 or balance
-        return noOfTokens;
+        return accounts[_owner];
     }
     
-    function transfer(address _to, uint256 _value) public returns (bool) {
-        // add to accountsAddresses
+    function transfer(address _to, uint256 _value) public onlyOwner returns (bool) {
         emit Transfer(msg.sender, _to, _value);
         accounts[_to] += _value;
+        noOfTokens -= _value;
     }
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
