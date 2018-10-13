@@ -1,22 +1,25 @@
 pragma solidity ^0.4.0;
-contract SimpleToken{
+
+import "https://github.com/OpenZeppelin/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+
+contract SimpleToken is Ownable{
     
-    address owner; // defaults to 0
     uint256 noOfTokens;
     string symbol;
     mapping (address => uint) accounts;
     address[] public accountsAddresses;
  
     constructor (uint256 _noOfTokens, string _symbol) public {
-        owner = msg.sender;
         noOfTokens = _noOfTokens;
         symbol = _symbol;
-        accounts[owner] = noOfTokens;
+        accounts[owner()] = noOfTokens;
     }
     
-    modifier hasEnoughBalance(address _from, uint256 _value){
+    modifier hasEnoughBalance(address _from, address _to, uint256 _value){
         if(accounts[msg.sender] >= _value) {
             _; // invoke the function
+        } else {
+            emit Transfer(msg.sender, _to, _value);
         }
     }
         
@@ -28,7 +31,7 @@ contract SimpleToken{
         return accounts[_owner];
     }
     
-    function transfer(address _to, uint256 _value) public  hasEnoughBalance(msg.sender, _value) returns (bool) {
+    function transfer(address _to, uint256 _value) public  hasEnoughBalance(msg.sender, _to,  _value) returns (bool) {
         accounts[_to] += _value;
         accounts[msg.sender] -= _value;
         emit Transfer(msg.sender, _to, _value);
@@ -36,5 +39,6 @@ contract SimpleToken{
     }
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event TransferFail(address indexed _from, address indexed _to, uint256 _value);
 
 }
