@@ -6,17 +6,18 @@ contract SimpleToken{
     string symbol;
     mapping (address => uint) accounts;
     address[] public accountsAddresses;
-    
-    modifier onlyOwner(){
-        if(msg.sender==owner) {
-            _; // invoke the function
-        }
-    }
  
     constructor (uint256 _noOfTokens, string _symbol) public {
         owner = msg.sender;
         noOfTokens = _noOfTokens;
         symbol = _symbol;
+        accounts[owner] = noOfTokens;
+    }
+    
+    modifier hasEnoughBalance(address _from, uint256 _value){
+        if(accounts[msg.sender] >= _value) {
+            _; // invoke the function
+        }
     }
         
     function totalSupply() public view returns (uint256) {
@@ -27,10 +28,11 @@ contract SimpleToken{
         return accounts[_owner];
     }
     
-    function transfer(address _to, uint256 _value) public onlyOwner returns (bool) {
-        emit Transfer(msg.sender, _to, _value);
+    function transfer(address _to, uint256 _value) public  hasEnoughBalance(msg.sender, _value) returns (bool) {
         accounts[_to] += _value;
-        noOfTokens -= _value;
+        accounts[msg.sender] -= _value;
+        emit Transfer(msg.sender, _to, _value);
+        return true;
     }
     
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
