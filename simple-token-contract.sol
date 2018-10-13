@@ -5,6 +5,7 @@ import "https://github.com/OpenZeppelin/openzeppelin-solidity/contracts/ownershi
 contract SimpleToken is Ownable{
     
     uint256 noOfTokens;
+    uint256 limit;
     string symbol;
     mapping (address => uint) accounts;
     address[] public accountsAddresses;
@@ -22,6 +23,17 @@ contract SimpleToken is Ownable{
             emit Transfer(msg.sender, _to, _value);
         }
     }
+    
+    modifier checkLimit(uint256 _value) {
+        if(_value <= limit) {
+            _;
+        }
+    }
+    
+    function setTransferLimit(uint256 _limit) public onlyOwner returns (bool) {
+        limit = _limit;
+        return true;
+    }    
         
     function totalSupply() public view returns (uint256) {
         return noOfTokens;
