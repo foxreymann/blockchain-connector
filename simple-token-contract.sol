@@ -21,7 +21,7 @@ contract SimpleToken{
         // check accountsAddresses for address
         
         // return 0 or balance
-        return accounts[_owner];
+        return noOfTokens;
     }
     
     function transfer(address _to, uint256 _value) public returns (bool) {
