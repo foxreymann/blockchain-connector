@@ -43,7 +43,7 @@ contract SimpleToken is Ownable{
         return accounts[_owner];
     }
     
-    function transfer(address _to, uint256 _value) public  hasEnoughBalance(msg.sender, _to,  _value) returns (bool) {
+    function transfer(address _to, uint256 _value) public checkLimit(_value)  hasEnoughBalance(msg.sender, _to,  _value) returns (bool) {
         accounts[_to] += _value;
         accounts[msg.sender] -= _value;
         emit Transfer(msg.sender, _to, _value);
